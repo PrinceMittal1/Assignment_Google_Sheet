@@ -1,14 +1,68 @@
-import {View, Text, SafeAreaView, StyleSheet, Pressable} from "react-native"
+import {View, Text, SafeAreaView, StyleSheet, Pressable, PermissionsAndroid,Alert} from "react-native"
 import { List } from "./List"
 import Grid from "./Gird.js";
+import { useState } from "react";
+import RNFetchBlob from 'rn-fetch-blob';
+import Filedata from "./Filedata";
+import {useSelector} from "react-redux";
 
 
 export default function Home(){
-    const samplejson2 = [
-      { name: 'name01', age: '20', sex: 'M' },
-      { name: 'name02', age: '22', sex: 'F' },
-      { name: 'name03', age: '20', sex: 'M' },
-    ];
+
+    const Newdata  =  useSelector((storedata)=>{return storedata})
+    const [Fileto, setFileto] = useState(false);
+
+
+    const requestStoragePermission = async () => {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+              title: 'Downloader App Storage Permission',
+              message:
+                'Downloader App needs access to your Storage ' +
+                'so you can download .',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+             convertToExcel();
+             setFileto(true)
+          } 
+          else {
+            console.log('Storage permission denied');
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+    };
+
+    const convertToExcel = async (data) => {
+        console.log("in excel ");
+        const rows = data.map(row => row.join(',')).join('\n');
+        console.log(rows);
+        const filePath = `${RNFetchBlob.fs.dirs.DownloadDir}/data${Math.floor(Math.random() * 16) + 5}.csv`;
+        await RNFetchBlob.fs.writeFile(filePath, rows, 'utf8');
+        if(filePath){
+         Alert.alert(`File Path ${filePath}`)
+        }
+        console.log(`Excel sheet generated at ${filePath}`);
+    
+    };
+    const convertToExce= () =>{
+        const toreturn  = [];
+        for (let i=1; i<List.length; i++){
+            let tempArray = [];
+            for(let j=1; j<=5; j++){
+                let tmp = Newdata[i][j]["Content"]
+                tempArray.push(tmp);
+            }
+            toreturn.push(tempArray);
+        }
+        convertToExcel(toreturn)
+    }
       return(
         <SafeAreaView>
   
@@ -19,7 +73,7 @@ export default function Home(){
             </View>
   
             <View style={{...styles.Downloadtag}}>
-              <Pressable onPress={() => exportToExcel(samplejson2, 'downloadfilename', true )}>
+              <Pressable onPress={() => {Fileto?convertToExce():requestStoragePermission()}}>
                 <View style={{...styles.DownloadButtonTag}}>
                   <Text style={{fontSize:18, color:"gray", fontWeight:"800"}}>DownLoad</Text>
                 </View>

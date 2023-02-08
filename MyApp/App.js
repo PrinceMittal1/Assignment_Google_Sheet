@@ -10,17 +10,17 @@ import {
   View,
 } from 'react-native';
 import Home from './Homes';
-import { Provider } from 'react-redux'
 import { MyStore } from './store';
+import { Provider } from "react-redux";
 
 
 function App(){
   return (
-    <Provider store={MyStore}>
-      <View style={{flex:1, backgroundColor:"white"}}>
+      <Provider store={MyStore}>
+        <View style={{flex:1, backgroundColor:"white"}}>
       <Home />
-    </View>
-    </Provider>
+      </View>
+      </Provider>
   );
 }
 

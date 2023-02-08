@@ -6,7 +6,6 @@ import InputBoxSheet from "./InputBoxOfStyleSheet"
 const windowWidth = Dimensions.get('window')
 
 function HorizontalRenderingFunction({data}){
-    console.log("data is " + data["Content"]);
     if(data.Type==="Image"){
         return <View style={{width:windowWidth.width/13, ...styles.All, ...styles.All_Border}}>
             <Text>y</Text>
